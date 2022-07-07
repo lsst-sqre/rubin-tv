@@ -286,16 +286,45 @@ async def get_historical_day_data(request: web.Request) -> web.Response:
 def get_per_day_channels(
     bucket: Bucket, camera: Camera, the_date: date, logger: Any
 ) -> dict[str, str]:
+    """Builds a dict of per-day channels to display
+
+    Takes a bucket, camera and a given date and returns a dict of per-day
+    channels to be iterated over in the view.
+    If there is nothing available for those channels, an empty dict is returned.
+
+    Parameters
+    ----------
+    bucket : `Bucket`
+        The app-wide Bucket instance
+
+    camera : `Camera`
+        The given Camera object
+
+    the_date : `date`
+        The datetime.date object for the given day
+
+    logger : `Any`
+        The app-wide logging object
+
+    Returns
+    -------
+    per_day_channels : `dict[str, str]`
+        The list of events, per channel
+
+    """
     per_day_channels = {}
-    if movie_url := get_movie_url(bucket, camera, the_date, logger):
-        per_day_channels["movie"] = movie_url
+    for channel in camera.per_day_channels.keys():
+        if resource_url := get_channel_resource_url(
+            bucket, camera.per_day_channels[channel], the_date, logger
+        ):
+            per_day_channels[channel] = resource_url
     return per_day_channels
 
 
-def get_movie_url(
-    bucket: Bucket, camera: Camera, a_date: date, logger: Any
+def get_channel_resource_url(
+    bucket: Bucket, channel: Channel, a_date: date, logger: Any
 ) -> str:
-    prefix = camera.per_day_channels["movie"].prefix
+    prefix = channel.prefix
     date_str = a_date.strftime("%Y%m%d")
     url = f"https://storage.googleapis.com/{bucket.name}/"
     url += f"{prefix}/dayObs_{date_str}.mp4"
