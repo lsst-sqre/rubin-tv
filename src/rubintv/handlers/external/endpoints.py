@@ -278,14 +278,14 @@ async def get_historical_day_data(request: web.Request) -> web.Response:
 
     page = get_formatted_page(
         "cameras/historical.jinja",
-            title=title,
-            camera=camera,
-            years=years,
-            month_names=month_names(),
-            date=the_date,
-            events=day_events,
-            metadata=metadata_json,
-            per_day=per_day,
+        title=title,
+        camera=camera,
+        years=years,
+        month_names=month_names(),
+        date=the_date,
+        events=day_events,
+        metadata=metadata_json,
+        per_day=per_day,
     )
     return web.Response(text=page, content_type="text/html")
 
